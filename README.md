@@ -61,7 +61,7 @@ A collection of all 12 projects from the Loop Engineering crash course, demonstr
 - Routine A drafts, human reviews, Routine B executes
 - Demonstrates the human gate pattern
 
-### Project 12: Dreaming Loop
+### Project 13: Dreaming Loop
 **Concepts: Concept 12 (spine), improvement loop**
 - Weekly loop that reads logs and proposes rules
 - Demonstrates the improvement loop
@@ -72,7 +72,7 @@ A collection of all 12 projects from the Loop Engineering crash course, demonstr
 |-----------|----------|-------------|
 | In-session | 1 | Runs while you watch, stops when session closes |
 | Conditional | 2, 4 | Runs until command proves success |
-| Scheduled | 3, 7, 8, 12 | Runs on a clock, even with laptop closed |
+| Scheduled | 3, 7, 8, 13 | Runs on a clock, even with laptop closed |
 | Event-driven | 6 | Reacts to something happening (PR, message) |
 
 ## The Six Parts
