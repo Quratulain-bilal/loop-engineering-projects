@@ -1,76 +1,80 @@
-# Project 2 — Make the tests pass, then stop
 
-**Concept 5: conditional loop · Concept 11: maker-checker** · Difficulty: easy–medium
+Project 2 — Make the Tests Pass, Then Stop
 
-## Masla kya tha?
+Concept 5: Conditional Loop · Concept 11: Maker-Checker · Difficulty: easy–medium
 
-Code mein bugs hain. Aap fix karte hain, phir socha "theek lag raha hai" aur
-aage barh gaye. Magar **aap ki raay saboot nahi hai.**
+What was the Problem?
 
-## Hal
+There are bugs in the code. You fix them, then think, “Looks good,” and move on.
 
-Loop chalao jo tab tak koshish karta rahe jab tak tests pass na ho jayein.
-Aur faisla **command** kare, aap nahi. Cap 6 tries.
+But your opinion is not evidence.
 
-## Files
+The Solution
 
-| File | Kaam |
-|---|---|
-| `src/kit.js` | 3 functions, har ek mein bug |
-| `test/kit.test.js` | Tests jo un bugs ko pakarte hain |
-| `run-tests.ps1` | **Checker** — tests chalata hai, exit code deta hai (0 = pass) |
-| `fix-loop.ps1` | Loop driver — attempts count karta hai, cap lagata hai |
-| `.attempts` | Counter, **file mein** — meri yaad mein nahi |
+Run a loop that keeps trying until the tests pass. The command makes the decision, not you.
 
-## Chalane ka tareeqa
+Maximum 6 attempts.
 
-```powershell
-.\run-tests.ps1              # sirf tests
+Files
 
-.\fix-loop.ps1 -Reset        # counter 0
-.\fix-loop.ps1               # ek attempt
-```
+File| Purpose
+"src/kit.js"| 3 functions, each containing a bug
+"test/kit.test.js"| Tests designed to catch those bugs
+"run-tests.ps1"| Checker — runs the tests and returns an exit code (0 = pass)
+"fix-loop.ps1"| Loop driver — counts attempts and enforces the cap
+".attempts"| Counter stored in a file, not in my memory
 
-Exit codes: `0` = pass ho gaya, `1` = aage barho, `2` = cap khatam.
+How to Run
 
-## Nateeja (jo waqai hua)
+.\run-tests.ps1              # Run tests only
+.\fix-loop.ps1 -Reset        # Reset counter to 0
+.\fix-loop.ps1               # Run one attempt
 
-| Attempt | Fix | Checker |
-|---|---|---|
-| 0 (baseline) | kuch nahi | 0 pass / 4 fail |
-| 1 | `average` — extra `- 1` hataya, empty pe throw | 2 pass / 2 fail → CONTINUE |
-| 2 | `titleCase` — har word, baqi lowercase | 3 pass / 1 fail → CONTINUE |
-| 3 | `unique` — Set se naya array, input untouched | 4 pass / 0 fail → **STOP** |
+Exit codes:
 
-**Attempt 3 of 6.** 3 attempts bache the. Cap pe rukna failure hota.
+- "0" = Tests passed
+- "1" = Continue
+- "2" = Attempt cap reached
 
-## Teen bugs
+Result (What Actually Happened)
 
-| Function | Bug | Fix |
-|---|---|---|
-| `average` | `sum / length - 1` — extra minus one. Empty list pe `NaN` deta tha. | `- 1` hataya, empty pe throw |
-| `titleCase` | Sirf pehla harf, aur baqi untouched — `"gOOd"` waisa hi raha | Space pe split, har word ka pehla harf upper, baqi lower |
-| `unique` | `splice` ne caller ka array badal diya, aur index skip ho gaya | Set se naya array, input kabhi chhua nahi |
+Attempt| Fix| Checker
+0 (baseline)| Nothing| 0 pass / 4 fail
+1| "average" — removed extra "- 1", added throw for empty input| 2 pass / 2 fail → CONTINUE
+2| "titleCase" — process every word, lowercase the remaining letters| 3 pass / 1 fail → CONTINUE
+3| "unique" — create a new array using "Set", leaving the input untouched| 4 pass / 0 fail → STOP
 
-## Asal seekh
+Attempt 3 of 6. There were 3 attempts remaining. Stopping because the cap was reached would have been a failure.
 
-**Faisla command ka tha, mera nahi.** Main sirf code badalta tha. "Ho gaya" ka
-faisla `node --test` ke exit code se aata tha. Main keh hi nahi sakta tha
-"mujhe lagta hai theek hai" — mere kehne ki koi ahmiyat nahi.
+The Three Bugs
 
-**Cap file mein hai, yaad mein nahi.** `.attempts` har run pe barhti hai. Session
-restart ho ya main bhool jaun, cap phir bhi lagta hai.
+Function| Bug| Fix
+"average"| "sum / length - 1" — extra minus one. Empty list returned "NaN".| Removed "- 1" and throw an error for an empty list
+"titleCase"| Only the first letter was changed; the remaining letters stayed untouched — ""gOOd"" remained like that| Split on spaces, capitalize the first letter of every word, lowercase the rest
+"unique"| "splice" modified the caller's array and caused an index to be skipped| Create a new array using "Set"; never modify the input
 
-**Cap pe rukna = fail.** Do wajah se ruk sakta hai: tests pass (exit 0) ya
-attempts khatam (exit 2). Dono mein farq hai.
+The Main Lessons
 
-## Ek honest baat
+The command made the decision, not me.
+I only changed the code. Whether the code was actually correct was determined by the "node --test" exit code. I could not simply say, “I think it's working.” My opinion had no authority.
 
-**Checker khud pehli baar toota tha.** `node --test test/` ne directory ko file
-samjha, aur "FAIL" aaya jo asli test failure nahi tha — infrastructure error tha.
+The cap is stored in a file, not in memory.
+".attempts" increases on every run. Even if the session restarts or I forget the previous attempts, the cap still applies.
 
-Agar main ye pakarta nahi, to loop 6 attempts tak code fix karta rehta jab ke
-code theek tha, aur cap pe mar jata.
+Stopping because of the cap = failure.
+There are two valid ways to stop:
 
-**Isi liye pehla kaam hamesha ye hona chahiye: confirm karo ke checker asli wajah
-se fail ho raha hai, kisi typo se nahi.**
+1. Tests pass → exit code "0"
+2. Attempts are exhausted → exit code "2"
+
+These two outcomes are not the same.
+
+One Honest Thing
+
+The checker itself was broken the first time.
+
+"node --test test/" treated the directory as a file, producing a ""FAIL"" that was not an actual test failure—it was an infrastructure error.
+
+If I had not caught this, the loop would have continued fixing the code for 6 attempts even though the code was already correct, eventually dying at the cap.
+
+That is why the first step should always be: confirm that the checker is failing for the real reason, not because of a typo or infrastructure mistake.
