@@ -1,4 +1,4 @@
-# PR Review Test Project
+# Project 6: PR Review Test
 
 This project demonstrates automated PR review using OpenCode's GitHub integration, showcasing all four heartbeat patterns.
 
