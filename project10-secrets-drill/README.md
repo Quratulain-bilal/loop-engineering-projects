@@ -1,4 +1,4 @@
-# Project 10: Secrets Drill
+# Project 11: Secrets Drill
 
 Learn where secrets live: .env file vs environment variables.
 

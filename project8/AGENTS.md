@@ -1,7 +1,7 @@
 # AGENTS.md - Rules for the Daily Lint Loop
 
 ## Project Overview
-This is a demo project for the daily lint loop (Project 9). The loop runs every weekday at 9am, finds lint issues, and drafts safe fixes.
+This is a demo project for the daily lint loop (Project 8). The loop runs every weekday at 9am, finds lint issues, and drafts safe fixes.
 
 ## Build & Test Commands
 - Install: `npm ci`

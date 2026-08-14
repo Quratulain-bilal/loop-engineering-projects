@@ -1,4 +1,4 @@
-# Project 9: Daily Lint Loop
+# Project 8: Daily Lint Loop
 
 A complete loop with all 6 parts, running unattended as a daily chore.
 

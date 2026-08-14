@@ -1,4 +1,4 @@
-# Project 9 — Rehearse a routine for free
+# Project 10 — Rehearse a routine for free
 
 **A1 · A3 (one-off schedules) · A5 (reading runs)** · Difficulty: easy
 
