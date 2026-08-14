@@ -1,61 +1,106 @@
-# Project 1 — A watch loop
+Project 1 — A Watch Loop
 
-**Concept 4: in-session loop** · Difficulty: easy
+Concept 4: In-Session Loop · Difficulty: Easy
 
-## Masla kya tha?
+What was the Problem?
 
-Aap ek lamba kaam chalate hain — build, test, download. 5-10 minute lagta hai.
-Aap terminal ke samne baith kar ghoortay rehte hain: "ho gaya? nahi... ho gaya?"
-Waqt zaya.
+You start a long-running task—such as a build, test, or download—that takes 5–10 minutes.
 
-## Hal
+You end up sitting in front of the terminal, repeatedly checking:
 
-Kaam background mein daal do. Ek chhota watcher har minute check karta rahe.
-Jab kaam khatam ho, wo aap ko bata de. Aap tab tak kuch aur karein.
+> “Is it done? No… Is it done now?”
 
-## Files
 
-| File | Kaam |
-|---|---|
-| `long-task.js` | Lamba kaam — 5 steps, har step 60 second. Khatam hone pe `output/result.json` banata hai. |
-| `check-task.ps1` | Checker — ek dafa dekhta hai `result.json` bani ya nahi. `DONE` ya `RUNNING`. |
-| `output/progress.log` | Task khud likhta hai, live. Har line 60 second ke faasle pe. |
-| `output/result.json` | **Jhanda** — sirf khatam hone pe banti hai. |
 
-## Chalane ka tareeqa
+That wastes your time.
 
-```powershell
-# 1. Kaam background mein shuru karo (detached — terminal phansta nahi)
+The Solution
+
+Run the task in the background and use a small watcher that checks its status every minute.
+
+When the task finishes, the watcher tells you.
+
+You can continue doing other work while you wait.
+
+Files
+
+File	Purpose
+
+long-task.js	The long-running task — 5 steps, 60 seconds per step. Creates output/result.json when finished.
+check-task.ps1	The checker — checks whether result.json exists. Returns DONE or RUNNING.
+output/progress.log	Written by the task itself to show live progress. Each line appears 60 seconds apart.
+output/result.json	The flag — created only when the task is successfully completed.
+
+
+How to Run
+
+# 1. Start the task in the background (detached — the terminal stays free)
 Start-Process node -ArgumentList "long-task.js 5 60000" -WindowStyle Hidden
 
-# 2. Loop lagao
-#    /loop 1m Run check-task.ps1. RUNNING pe chup raho, DONE pe batao aur ruk jao.
+# 2. Start the loop
+#    /loop 1m Run check-task.ps1.
+#    Stay silent when RUNNING; report when DONE and then stop.
 
-# 3. Chhor dein. DONE pe loop khud batayega aur band ho jayega.
-```
+# 3. Leave it running.
+#    The loop will notify you when the task is DONE and then stop.
 
-Jaldi test: `long-task.js 3 10000` (3 steps × 10 sec = 30 second).
+Quick Test
 
-## Asal seekh
+Use:
 
-**Kaam khatam hote hi ek file likh do.** Wo file jhanda hai. Checker ko kaam ke
-andar ka kuch samajhne ki zaroorat nahi — bas wo ek file dhoondta rahe.
+long-task.js 3 10000
 
-`Start-Process` zaroori hai. Seedha `node long-task.js` chalayein to terminal
-phans jayega, aur poora point khatam.
+This runs 3 steps × 10 seconds = 30 seconds.
 
-## Ek kharabi jo aap ko pata honi chahiye
+The Main Lesson
 
-Checker sirf jhanda-file dhoondta hai. **Agar kaam beech mein crash kar jaye, to
-file kabhi nahi banegi aur checker hamesha `RUNNING` kehta rahega** — aap ek
-murda process ka intezaar karte rah jayenge.
+When the task finishes, create a file.
 
-Asli kaam mein checker ko yeh bhi dekhna chahiye ke process zinda hai
-(`Get-Process -Id <pid>`), ya task ko `error.json` likhna chahiye jab wo fail ho.
+That file acts as a flag.
 
-## Nateeja (jo waqai hua)
+The checker doesn't need to understand what is happening inside the task. It simply keeps looking for that one file.
 
-Task 12:11:56 UTC pe shuru, 12:16:56 pe khatam — theek 5 minute.
-Loop ne 5 baar check kiya: 4 baar RUNNING, 5vi baar DONE. Phir khud ruk gaya.
+Start-Process is important because it runs the task separately in the background.
 
-Aap ne terminal nahi ghoora — yehi shart thi.
+If you simply run:
+
+node long-task.js
+
+the terminal will remain occupied until the task finishes, which defeats the whole purpose.
+
+One Important Problem
+
+The checker only looks for the flag file.
+
+If the task crashes halfway through, result.json will never be created. The checker will keep saying:
+
+RUNNING
+
+even though the process is actually dead.
+
+In a real system, the checker should also verify that the process is still alive, for example using:
+
+Get-Process -Id <pid>
+
+Or the task could create an error.json file when it fails.
+
+What Actually Happened
+
+The task started at 12:11:56 UTC and finished at 12:16:56 UTC—exactly 5 minutes later.
+
+The loop checked 5 times:
+
+Check 1 → RUNNING
+
+Check 2 → RUNNING
+
+Check 3 → RUNNING
+
+Check 4 → RUNNING
+
+Check 5 → DONE
+
+
+The loop then stopped automatically.
+
+You didn't have to sit and watch the terminal—that's the whole point of a watch loop.
