@@ -46,15 +46,15 @@ A collection of all 12 projects from the Loop Engineering crash course, demonstr
 - Runs every weekday at 9am
 - Demonstrates: heartbeat, worktree, skill, maker-checker, connector, spine
 
-### Project 9: Secrets Drill
-**Concepts: A4 (secrets), A2 (environment)**
-- Learn where secrets live: .env vs environment variables
-- Demonstrates why .env fails in cloud
-
-### Project 10: Rehearse Routine
+### Project 9: Rehearse Routine
 **Concepts: A1, A3 (one-off schedules), A5 (reading runs)**
 - Prove a prompt with one-off runs before committing to schedule
 - Learn that green status ≠ success
+
+### Project 10: Secrets Drill
+**Concepts: A4 (secrets), A2 (environment)**
+- Learn where secrets live: .env vs environment variables
+- Demonstrates why .env fails in cloud
 
 ### Project 11: Two-Routine Gate
 **Concepts: A3 (API trigger), A4 (gate), A6 (checklist)**

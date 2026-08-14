@@ -1,4 +1,4 @@
-# Project 13: Dreaming Loop
+# Project 12: Dreaming Loop
 
 A weekly loop that reads other loops' logs and proposes rule changes.
 
