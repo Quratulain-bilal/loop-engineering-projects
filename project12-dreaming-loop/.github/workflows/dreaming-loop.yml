@@ -1,0 +1,65 @@
+name: Weekly Dreaming Loop
+
+on:
+  schedule:
+    - cron: "0 10 * * 1"  # Every Monday at 10am
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  dreaming:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Budget guard
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run OpenCode dreaming loop
+        uses: anomalyco/opencode/github@latest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: anthropic/claude-sonnet-5
+          use_github_token: true
+          prompt: |
+            Run the dreaming skill.
+            
+            Read dreaming-state.md first to find the last run date.
+            Read progress.md to gather logs since that date.
+            
+            Find repeated failures (3+ occurrences) and repeated lessons (2+).
+            
+            For each pattern:
+            - Draft a PR on a claude/ branch with the proposed rule change
+            - Cite which runs, how often, and why the rule stops it
+            - One PR per pattern
+            
+            Propose one deletion of a rule no longer needed.
+            
+            Update dreaming-state.md when done.
+            
+            Budget: Max 1 PR per pattern, max 3 patterns per run.
+            If no patterns found, just update state and exit.
+
+      - name: Upload dreaming summary
+        if: always()
+        run: |
+          echo "## Dreaming Loop Summary" >> $GITHUB_STEP_SUMMARY
+          echo "Run completed at $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "Check dreaming-state.md for details" >> $GITHUB_STEP_SUMMARY
