@@ -1,0 +1,22 @@
+{
+  "name": "daily-loop-project",
+  "version": "1.0.0",
+  "description": "Project 9: Daily lint loop with all 6 parts",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src/ --ext .js,.ts",
+    "lint:fix": "eslint src/ --ext .js,.ts --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.3.3"
+  }
+}

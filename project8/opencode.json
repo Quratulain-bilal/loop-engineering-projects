@@ -1,0 +1,32 @@
+{
+  "github": {
+    "enabled": true,
+    "review": {
+      "autoReview": true,
+      "triggerOn": ["pull_request"],
+      "prompt": "Review this pull request for bugs, quality issues, and security risks."
+    }
+  },
+  "agents": {
+    "reviewer": {
+      "mode": "subagent",
+      "model": "anthropic/claude-haiku-4-5-20251001",
+      "description": "Reviews a lint fix diff against the spec and tests. Replies PASS or FAIL with reasons. Read-only.",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "npm test*": "allow",
+          "npm run lint*": "allow",
+          "git diff*": "allow"
+        }
+      }
+    }
+  },
+  "budget": {
+    "maxTokensPerRun": 50000,
+    "maxPRsPerRun": 5,
+    "maxRunsPerDay": 1,
+    "timeoutMinutes": 10
+  }
+}

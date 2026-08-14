@@ -1,0 +1,58 @@
+name: Daily Lint Sweep
+
+on:
+  schedule:
+    - cron: "0 9 * * 1-5"  # Weekdays at 9am
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  lint-sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # Budget guard: max 10 minutes per run
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run OpenCode lint sweep
+        uses: anomalyco/opencode/github@latest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: anthropic/claude-sonnet-5
+          use_github_token: true
+          prompt: |
+            Run the daily-lint skill.
+            Read progress.md first; update it last.
+            For each lint fix: draft it on a new branch, then invoke the
+            @reviewer subagent to grade it. Open a PR only when the reviewer
+            replies PASS. Append anything risky to the "needs a human" section
+            of progress.md and leave it for the maintainer.
+            
+            Budget rules:
+            - Max 5 PRs per run
+            - Max 50000 tokens per run
+            - If lint is clean, just update progress.md and exit
+
+      - name: Upload run summary
+        if: always()
+        run: |
+          echo "## Lint Sweep Summary" >> $GITHUB_STEP_SUMMARY
+          echo "Run completed at $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "Check progress.md for details" >> $GITHUB_STEP_SUMMARY
